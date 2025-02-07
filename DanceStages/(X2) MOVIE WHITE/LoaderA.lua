@@ -3,6 +3,7 @@ local movieRate = string.find(_VERSION, 5.3) and 1 or (1/18)
 local list = {}
 local callvideo = {}
 local Loop = 0
+local videosplace = "/DanceStages/StageMovies/"
 
 ------- FUNCTIONS  -------
 
@@ -15,33 +16,57 @@ local function GetSong()
 end
 
 local function setVariables()
-	Loop = 0
-	
-	if HasVideo() then
-		VideoFileType = {"mp4","avi","mov","m2ts","m2v","wmv","mpg","mpeg"}
-		for i=1,#VideoFileType do
-			if FILEMAN:DoesFileExist(GetSong():GetMusicPath():sub(1, -4)..VideoFileType[i]) then
-				VideoTexture = GetSong():GetMusicPath():sub(1, -4)..VideoFileType[i]
-				Loop=0
-				break
-			end
-		end
-	else
-		list = FILEMAN:GetDirListing("/DanceStages/StageMovies/")
-		if #list ~= 0 and GetUserPref("RMStage") == "Random Movies" then
-			for i = 1, 7 do
-				table.insert(callvideo,i,list[math.random(#list)])
-			end
-			VideoTexture = "Black.png"
-		else
-			if FILEMAN:DoesFileExist(GetSong():GetJacketPath()) then
-				VideoTexture = GetSong():GetJacketPath()
-			else
-				VideoTexture = "Black.png"
-			end
-		end
-		Loop=1
-	end
+    Loop = 0
+    callvideo = {}
+
+    if HasVideo() then
+        local VideoFileType = {"mp4", "avi", "mov", "m2ts", "m2v", "wmv", "mpg", "mpeg"}
+        local songPath = GetSong():GetSongDir()
+        local files = FILEMAN:GetDirListing(songPath, false, false)
+        local videoList = {}
+
+        -- Buscar todos los videos en la carpeta de la canción
+        for _, file in ipairs(files) do
+            for _, ext in ipairs(VideoFileType) do
+                if file:match("%." .. ext .. "$") then
+                    table.insert(videoList,file)
+                end
+            end
+        end
+        if #videoList > 1 then
+            for i = #videoList, 2, -1 do
+                local j = math.random(i)
+                videoList[i], videoList[j] = videoList[j], videoList[i] -- Random swap
+            end
+
+            for i = 1, math.min(#videoList, 12) do
+                table.insert(callvideo, videoList[i])
+            end
+
+			videosplace = songPath
+            VideoTexture = "Black.png" -- Placeholder
+            Loop = 1
+        else
+            VideoTexture = videoList[1]
+            Loop = 0
+        end
+
+    else
+        list = FILEMAN:GetDirListing(videosplace)
+        if #list ~= 0 and GetUserPref("RMStage") == "Random Movies" then
+            for i = 1, 7 do
+                table.insert(callvideo, list[math.random(#list)])
+            end
+            VideoTexture = "Black.png"
+        else
+            if FILEMAN:DoesFileExist(GetSong():GetJacketPath()) then
+                VideoTexture = GetSong():GetJacketPath()
+            else
+                VideoTexture = "Black.png"
+            end
+        end
+        Loop = 1
+    end
 end
 
 local function SongMeasureSec()
@@ -119,25 +144,25 @@ local function MovieBackground(x,z,rY,cL,cR)
 				end
 			end,
 			FirstCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[1]):scaletoclipped(15,8):rate(movieRate)
+				self:Load(videosplace..callvideo[1]):scaletoclipped(15,8):rate(movieRate)
 			end,
 			SecondCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[2]):scaletoclipped(15,8):rate(movieRate)
+				self:Load(videosplace..callvideo[2]):scaletoclipped(15,8):rate(movieRate)
 			end,
 			ThirdCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[3]):scaletoclipped(15,8):rate(movieRate)
+				self:Load(videosplace..callvideo[3]):scaletoclipped(15,8):rate(movieRate)
 			end,
 			FourthCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[4]):scaletoclipped(15,8):rate(movieRate)
+				self:Load(videosplace..callvideo[4]):scaletoclipped(15,8):rate(movieRate)
 			end,
 			FivethCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[5]):scaletoclipped(15,8):rate(movieRate)
+				self:Load(videosplace..callvideo[5]):scaletoclipped(15,8):rate(movieRate)
 			end,
 			SixthCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[6]):scaletoclipped(15,8):rate(movieRate)
+				self:Load(videosplace..callvideo[6]):scaletoclipped(15,8):rate(movieRate)
 			end,
 			SeventhCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[7]):scaletoclipped(15,8):rate(movieRate)
+				self:Load(videosplace..callvideo[7]):scaletoclipped(15,8):rate(movieRate)
 			end,
 		},
 	}
@@ -188,25 +213,25 @@ local function MovieMonitor(x,z,rY,cL,cR)
 				end
 			end,
 			FirstCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[1]):scaletoclipped(170,93.7):rate(movieRate)
+				self:Load(videosplace..callvideo[1]):scaletoclipped(170,93.7):rate(movieRate)
 			end,
 			SecondCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[2]):scaletoclipped(170,93.7):rate(movieRate)
+				self:Load(videosplace..callvideo[2]):scaletoclipped(170,93.7):rate(movieRate)
 			end,
 			ThirdCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[3]):scaletoclipped(170,93.7):rate(movieRate)
+				self:Load(videosplace..callvideo[3]):scaletoclipped(170,93.7):rate(movieRate)
 			end,
 			FourthCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[4]):scaletoclipped(170,93.7):rate(movieRate)
+				self:Load(videosplace..callvideo[4]):scaletoclipped(170,93.7):rate(movieRate)
 			end,
 			FivethCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[5]):scaletoclipped(170,93.7):rate(movieRate)
+				self:Load(videosplace..callvideo[5]):scaletoclipped(170,93.7):rate(movieRate)
 			end,
 			SixthCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[6]):scaletoclipped(170,93.7):rate(movieRate)
+				self:Load(videosplace..callvideo[6]):scaletoclipped(170,93.7):rate(movieRate)
 			end,
 			SeventhCommand=function(self)
-				self:Load('/DanceStages/StageMovies/'..callvideo[7]):scaletoclipped(170,93.7):rate(movieRate)
+				self:Load(videosplace..callvideo[7]):scaletoclipped(170,93.7):rate(movieRate)
 			end,
 		},
 	}
